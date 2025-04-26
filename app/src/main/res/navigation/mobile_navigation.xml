@@ -4,20 +4,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/navigation_home"> <!-- Исправлено здесь -->
+    app:startDestination="@id/navigation_home">  <!-- Используйте app: префикс -->
 
+    <!-- Home Fragment -->
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.smoogle.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
 
+        <!-- Действие перехода в Dashboard -->
+        <action
+            android:id="@+id/action_home_to_dashboard"
+            app:destination="@id/navigation_dashboard" />
+    </fragment>
+
+    <!-- Dashboard Fragment -->
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.smoogle.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard">
 
+        <!-- Действие возврата в Home -->
+        <action
+            android:id="@+id/action_dashboard_to_home"
+            app:destination="@id/navigation_home" />
+
+        <!-- Аргумент для передачи данных -->
+        <argument
+            android:name="data"
+            app:argType="string"
+            android:defaultValue="Default Value" />
+    </fragment>
+
+    <!-- Notifications Fragment -->
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.smoogle.ui.notifications.NotificationsFragment"

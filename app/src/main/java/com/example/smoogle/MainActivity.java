@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
-import com.example.textrecognizer.R;
+import com.example.smoogle.R;
 import com.google.mlkit.vision.common.InputImage;
 import java.io.IOException;
 

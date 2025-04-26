@@ -2,38 +2,54 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:gravity="center">
+    tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/select_button"
+    <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Image"
-        android:layout_marginBottom="24dp"
-        app:icon="@drawable/ic_image"
-        app:iconTint="@color/white"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:scaleType="centerCrop"
-        android:contentDescription="Selected image preview"
-        android:background="@color/material_grey_300"
-        android:layout_marginBottom="24dp"/>
+        android:contentDescription="Preview image" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/select_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Select Image" />
+
+        <Button
+            android:id="@+id/camera_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Take Photo" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/result_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="italic"
-        android:text="Select an image to start recognition"
-        android:padding="8dp"/>
+        android:layout_marginTop="16dp"
+        android:textSize="16sp" />
 
 </LinearLayout>

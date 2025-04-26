@@ -10,14 +10,14 @@ import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 public class TextRecognitionViewModel extends ViewModel {
+    private static final String TAG = "TextRecognitionVM";
     private final MutableLiveData<String> recognizedText = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isProcessing = new MutableLiveData<>();
     private final TextRecognizer textRecognizer;
 
     public TextRecognitionViewModel() {
-        textRecognizer = TextRecognition.getClient(
-                TextRecognizerOptions.DEFAULT_OPTIONS
-        );
+        textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
     public LiveData<String> getRecognizedText() {
@@ -28,12 +28,21 @@ public class TextRecognitionViewModel extends ViewModel {
         return errorMessage;
     }
 
+    public LiveData<Boolean> getIsProcessing() {
+        return isProcessing;
+    }
+
     public void processImage(InputImage image) {
+        isProcessing.setValue(true);
         textRecognizer.process(image)
-                .addOnSuccessListener(visionText ->
-                        recognizedText.setValue(visionText.getText()))
-                .addOnFailureListener(e ->
-                        errorMessage.setValue(e.getMessage()));
+                .addOnSuccessListener(visionText -> {
+                    recognizedText.setValue(visionText.getText());
+                    isProcessing.setValue(false);
+                })
+                .addOnFailureListener(e -> {
+                    errorMessage.setValue(e.getMessage());
+                    isProcessing.setValue(false);
+                });
     }
 
     @Override

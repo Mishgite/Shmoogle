@@ -21,6 +21,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:localeConfig="@xml/locales_config"
         tools:replace="android:icon,android:theme"> <!-- Решение конфликтов с библиотеками -->
 
         <!-- Main Activity -->
@@ -33,6 +34,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme"
+            android:usesCleartextTraffic="true"
+            android:windowSoftInputMode="adjustPan"/>
 
         <!-- FileProvider для работы с камерой -->
         <provider

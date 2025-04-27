@@ -6,4 +6,21 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <!-- Светлая тема -->
+    <style name="AppTheme.Light" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryLight</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkLight</item>
+        <item name="colorAccent">@color/colorAccentLight</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDarkLight</item>
+        <item name="android:windowBackground">@color/backgroundLight</item>
+    </style>
+
+    <!-- Тёмная тема -->
+    <style name="AppTheme.Dark" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkDark</item>
+        <item name="colorAccent">@color/colorAccentDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDarkDark</item>
+        <item name="android:windowBackground">@color/backgroundDark</item>
+    </style>
 </resources>

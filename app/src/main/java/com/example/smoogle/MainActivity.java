@@ -2,7 +2,10 @@ package com.example.smoogle;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "CameraDebug";
@@ -35,33 +39,90 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 200;
     private static final int CAMERA_PERMISSION_REQUEST = 300;
     private static final int STORAGE_PERMISSION_REQUEST = 201;  // Уникальный код для запроса разрешения
+    private static final int REQUEST_CODE_SETTINGS = 1001;
+    private boolean isReturningFromSettings = false;
+
 
     private TextRecognitionViewModel viewModel;
     private ImageView imagePreview;
     private TextView resultText;
     private ProgressBar progressBar;
     private String currentPhotoPath;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applySettings();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initializeViews();
-        setupViewModel();
+
     }
 
     private void initializeViews() {
-        imagePreview = findViewById(R.id.image_view);
-        resultText = findViewById(R.id.result_text);
-        progressBar = findViewById(R.id.progress_bar);
-        Button selectButton = findViewById(R.id.select_button);
-        Button cameraButton = findViewById(R.id.camera_button);
+        try {
+            imagePreview = findViewById(R.id.image_view);
+            resultText = findViewById(R.id.result_text);
+            progressBar = findViewById(R.id.progress_bar);
+            Button selectButton = findViewById(R.id.select_button);
+            Button cameraButton = findViewById(R.id.camera_button);
+            Button settingsButton = findViewById(R.id.settings_button);
 
-        selectButton.setOnClickListener(v -> openImagePicker());
-        cameraButton.setOnClickListener(v -> checkCameraPermission());
+            selectButton.setOnClickListener(v -> checkStoragePermission());
+            cameraButton.setOnClickListener(v -> checkCameraPermission());
+            settingsButton.setOnClickListener(v -> {
+                startActivityForResult(
+                        new Intent(this, SettingsActivity.class),
+                        REQUEST_CODE_SETTINGS
+                );
+            });
+
+        } catch (Exception e) {
+            Log.e(TAG, "View initialization failed", e);
+            Toast.makeText(this, "Error initializing views", Toast.LENGTH_SHORT).show();
+        }
     }
 
+    // Загрузка настроек темы
+    private void applySettings() {
+        // Загрузка настроек темы
+        boolean isDarkTheme = getSharedPreferences("AppSettings", MODE_PRIVATE)
+                .getBoolean("isDarkTheme", false);
+        SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
+
+        setTheme(isDarkTheme ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
+
+        // Загрузка настроек языка
+        String lang = prefs.getString("language", "en");
+        updateLocale(lang);
+
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+    }
+
+    private void updateLocale(String langCode) {
+        Locale locale = new Locale(langCode);
+        Locale.setDefault(locale);
+
+        Resources res = getResources();
+        Configuration config = res.getConfiguration();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            config.setLocale(locale);
+        } else {
+            config.locale = locale;
+        }
+
+        res.updateConfiguration(config, res.getDisplayMetrics());
+    }
+    private void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_SETTINGS);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(TextRecognitionViewModel.class);
 
@@ -95,6 +156,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void checkStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            openImagePicker();
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                openImagePicker();
+            } else {
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        STORAGE_PERMISSION_REQUEST
+                );
+            }
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -202,9 +279,24 @@ public class MainActivity extends AppCompatActivity {
                     processSelectedImage(imageUri);
                 }
             }
+            if (requestCode == REQUEST_CODE_SETTINGS) {
+                // Полный перезапуск приложения
+                Intent restartIntent = new Intent(this, MainActivity.class);
+                restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(restartIntent);
+                finish();
+        }
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isReturningFromSettings) {
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            isReturningFromSettings = false;
+        }
+    }
     private void processSelectedImage(Uri imageUri) {
         try {
             Glide.with(this)

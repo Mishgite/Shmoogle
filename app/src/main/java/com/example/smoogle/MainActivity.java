@@ -1,6 +1,7 @@
 package com.example.smoogle;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializeViews();
-
+        setupViewModel(); // Добавить эту строку
     }
 
     private void initializeViews() {
@@ -96,11 +97,6 @@ public class MainActivity extends AppCompatActivity {
         String lang = prefs.getString("language", "en");
         updateLocale(lang);
 
-        Locale locale = new Locale(lang);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
     }
 
     private void updateLocale(String langCode) {
@@ -108,10 +104,11 @@ public class MainActivity extends AppCompatActivity {
         Locale.setDefault(locale);
 
         Resources res = getResources();
-        Configuration config = res.getConfiguration();
+        Configuration config = new Configuration(res.getConfiguration());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             config.setLocale(locale);
+            getApplicationContext().createConfigurationContext(config);
         } else {
             config.locale = locale;
         }
@@ -285,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
                 restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(restartIntent);
                 finish();
+                recreate();
         }
         }
     }

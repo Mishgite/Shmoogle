@@ -87,17 +87,16 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void handleBackPressed() {
         if (settingsChanged) {
-            setResult(RESULT_OK); // Убедимся, что результат установлен
+            Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
         }
         finish();
     }
 
     @Override
     public void onBackPressed() {
+        handleBackPressed();
         super.onBackPressed();
-        setResult(RESULT_OK); // Сообщаем MainActivity об изменениях
-        finish();
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     @Override

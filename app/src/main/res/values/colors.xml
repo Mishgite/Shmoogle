@@ -12,9 +12,18 @@
     <color name="colorPrimaryLight">#6200EE</color>
     <color name="colorPrimaryDarkLight">#3700B3</color>
     <color name="colorAccentLight">#03DAC5</color>
-    <color name="colorPrimaryDark">#212121</color>
     <color name="colorPrimaryDarkDark">#000000</color>
     <color name="colorAccentDark">#BB86FC</color>
     <color name="backgroundLight">#FFFFFF</color>
     <color name="backgroundDark">#121212</color>
+    <color name="colorPrimaryVariantLight">#3700B3</color>
+    <color name="colorOnPrimaryLight">#FFFFFF</color>
+    <color name="windowBackgroundLight">#FFFFFF</color>
+    <color name="textColorPrimaryLight">#000000</color>
+    <color name="colorPrimaryDark">#BB86FC</color>
+    <color name="colorPrimaryVariantDark">#3700B3</color>
+    <color name="colorOnPrimaryDark">#000000</color>
+    <color name="windowBackgroundDark">#121212</color>
+    <color name="textColorPrimaryDark">#FFFFFF</color>
+
 </resources>

@@ -14,4 +14,6 @@
     <string name="select_image">Select Image</string>
     <string name="take_photo">Take Photo</string>
     <string name="back_to_main">Вернуться в главное меню</string>
+    <string name="edit">Edit</string>
+    <string name="recognized_text">Расспознаный текст</string>
 </resources>

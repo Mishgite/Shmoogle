@@ -12,15 +12,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -63,24 +66,26 @@ public class MainActivity extends AppCompatActivity {
     private void initializeViews() {
         try {
             imagePreview = findViewById(R.id.image_view);
-            resultText = findViewById(R.id.result_text);
+            resultText = findViewById(R.id.editTextResults); // Правильный ID
             progressBar = findViewById(R.id.progress_bar);
+
             Button selectButton = findViewById(R.id.select_button);
             Button cameraButton = findViewById(R.id.camera_button);
             Button settingsButton = findViewById(R.id.settings_button);
 
+            // Проверка на null
+            if (selectButton == null || cameraButton == null || settingsButton == null) {
+                throw new RuntimeException("One or more buttons not found!");
+            }
+
+            // Обработчики кликов остаются без изменений
             selectButton.setOnClickListener(v -> checkStoragePermission());
             cameraButton.setOnClickListener(v -> checkCameraPermission());
-            settingsButton.setOnClickListener(v -> {
-                startActivityForResult(
-                        new Intent(this, SettingsActivity.class),
-                        REQUEST_CODE_SETTINGS
-                );
-            });
+            settingsButton.setOnClickListener(v -> openSettings());
 
         } catch (Exception e) {
             Log.e(TAG, "View initialization failed", e);
-            Toast.makeText(this, "Error initializing views", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -139,7 +144,31 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.camera_button).setEnabled(!isProcessing);
         });
     }
+    private void showEditDialog() {
+        String currentText = resultText.getText().toString();
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit Text");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        input.setLines(5);
+        input.setMaxLines(10);
+        input.setVerticalScrollBarEnabled(true);
+        input.setText(currentText);
+        builder.setView(input);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newText = input.getText().toString();
+            resultText.setText(newText);
+            // При необходимости обновить ViewModel:
+            viewModel.updateRecognizedText(newText);
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {

@@ -44,7 +44,9 @@ public class TextRecognitionViewModel extends ViewModel {
                     isProcessing.setValue(false);
                 });
     }
-
+    public void updateRecognizedText(String text) {
+        recognizedText.setValue(text);
+    }
     @Override
     protected void onCleared() {
         super.onCleared();

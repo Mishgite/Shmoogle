@@ -25,5 +25,6 @@
     <color name="colorOnPrimaryDark">#000000</color>
     <color name="windowBackgroundDark">#121212</color>
     <color name="textColorPrimaryDark">#FFFFFF</color>
+    <color name="dark_gray">#FF212121</color>
 
 </resources>

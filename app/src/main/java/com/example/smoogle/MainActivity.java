@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int STORAGE_PERMISSION_REQUEST = 201;  // Уникальный код для запроса разрешения
     private static final int REQUEST_CODE_SETTINGS = 1001;
     private boolean isReturningFromSettings = false;
+    private static final int REQUEST_EDIT_TEXT = 1002;
 
 
     private TextRecognitionViewModel viewModel;
@@ -68,11 +69,18 @@ public class MainActivity extends AppCompatActivity {
             imagePreview = findViewById(R.id.image_view);
             resultText = findViewById(R.id.editTextResults); // Правильный ID
             progressBar = findViewById(R.id.progress_bar);
-
+            Button editButton = findViewById(R.id.edit_button); // Добавьте кнопку в XML
+            editButton.setOnClickListener(v -> openEditActivity());
             Button selectButton = findViewById(R.id.select_button);
             Button cameraButton = findViewById(R.id.camera_button);
             Button settingsButton = findViewById(R.id.settings_button);
-
+            editButton.setOnClickListener(v -> {
+                if (resultText.getText() != null) {
+                    openEditActivity();
+                } else {
+                    Toast.makeText(this, "Нет текста для редактирования", Toast.LENGTH_SHORT).show();
+                }
+            });
             // Проверка на null
             if (selectButton == null || cameraButton == null || settingsButton == null) {
                 throw new RuntimeException("One or more buttons not found!");
@@ -88,7 +96,15 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
+    private void openEditActivity() {
+        if (resultText.getText() == null) {
+            Toast.makeText(this, "Текст отсутствует", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, EditTextActivity.class);
+        intent.putExtra("text", resultText.getText().toString());
+        startActivityForResult(intent, REQUEST_EDIT_TEXT);
+    }
     // Загрузка настроек темы
     private void applySettings() {
         // Загрузка настроек темы
@@ -313,6 +329,14 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 recreate();
         }
+            else if (requestCode == REQUEST_EDIT_TEXT) { // Добавьте этот блок
+                // Получение отредактированного текста
+                if (data != null) {
+                    String editedText = data.getStringExtra("editedText");
+                    resultText.setText(editedText);
+                    viewModel.updateRecognizedText(editedText);
+                }
+            }
         }
     }
 

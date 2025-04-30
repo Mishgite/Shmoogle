@@ -12,6 +12,7 @@
         <item name="colorOnPrimary">@color/colorOnPrimaryLight</item>
         <item name="android:windowBackground">@color/windowBackgroundLight</item>
         <item name="android:textColorPrimary">@color/textColorPrimaryLight</item>
+        <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/black</item>
 
     </style>
@@ -23,6 +24,7 @@
         <item name="android:windowBackground">@color/windowBackgroundDark</item>
         <item name="android:textColorPrimary">@color/textColorPrimaryDark</item>
         <item name="colorOnSurface">@color/white</item>
+        <item name="colorSurface">@color/dark_gray</item>
 
     </style>
 </resources>

@@ -44,7 +44,8 @@
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true"
             android:windowSoftInputMode="adjustPan"/>
-
+        <activity android:name=".RecordsActivity"
+            android:label="История записей"/>
         <!-- FileProvider для работы с камерой -->
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -20,4 +20,10 @@
     <string name="search">Поиск</string>
     <string name="back">Назад</string>
     <string name="edit_text">Edit Text</string>
+    <string name="save_options">Выберите способ сохранения:</string>
+    <string name="append_text">Добавить к последней записи</string>
+    <string name="replace_text">Создать новую запись</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="history">История</string>
 </resources>

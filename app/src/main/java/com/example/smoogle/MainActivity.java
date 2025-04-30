@@ -54,16 +54,31 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private String currentPhotoPath;
     private SharedPreferences sharedPreferences;
+    private TextRepository textRepository;
+    private TextRecord currentRecord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         applySettings();
         super.onCreate(savedInstanceState);
+        textRepository = new TextRepository(this);
+
         setContentView(R.layout.activity_main);
         initializeViews();
         setupViewModel(); // Добавить эту строку
+        viewModel.getRecognizedText().observe(this, text -> {
+            resultText.setText(text);
+            autoSaveToDatabase(text);
+        });
     }
-
+    private void autoSaveToDatabase(String text) {
+        if (currentRecord == null) {
+            currentRecord = new TextRecord(text);
+        } else {
+            currentRecord.content = text;
+        }
+        textRepository.saveRecord(currentRecord);
+    }
     private void initializeViews() {
         try {
             imagePreview = findViewById(R.id.image_view);
@@ -74,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             Button selectButton = findViewById(R.id.select_button);
             Button cameraButton = findViewById(R.id.camera_button);
             Button settingsButton = findViewById(R.id.settings_button);
+            Button historyButton = findViewById(R.id.history_button);
+            historyButton.setOnClickListener(v ->
+                    startActivity(new Intent(this, RecordsActivity.class)));
             editButton.setOnClickListener(v -> {
                 if (resultText.getText() != null) {
                     openEditActivity();

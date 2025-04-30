@@ -26,5 +26,6 @@
     <color name="windowBackgroundDark">#121212</color>
     <color name="textColorPrimaryDark">#FFFFFF</color>
     <color name="dark_gray">#FF212121</color>
-
+    <color name="primary_alpha_20">#33FF5722</color>
+    <color name="error_alpha_20">#33F44336</color>
 </resources>

@@ -3,38 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="?attr/colorSurface">
 
     <TextView
         android:id="@+id/record_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="?attr/colorOnSurface"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="?attr/colorPrimary">
 
         <Button
             android:id="@+id/btn_append"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Добавить"/>
+            android:text="Добавить"
+            android:textColor="?attr/colorOnPrimary"/>
 
         <Button
             android:id="@+id/btn_replace"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Заменить"/>
+            android:text="Заменить"
+            android:textColor="?attr/colorOnPrimary"/>
 
         <Button
             android:id="@+id/btn_delete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Удалить"/>
+            android:text="Удалить"
+            android:textColor="?attr/colorOnPrimary"/>
     </LinearLayout>
 </LinearLayout>

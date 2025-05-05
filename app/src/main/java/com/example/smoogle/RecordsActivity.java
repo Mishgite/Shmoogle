@@ -1,5 +1,6 @@
 package com.example.smoogle;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,8 @@ public class RecordsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyThemeBeforeCreation(); // Применить тему до setContentView()
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records);
 
@@ -29,7 +32,29 @@ public class RecordsActivity extends AppCompatActivity {
 
         loadRecords();
     }
+    private void applyThemeBeforeCreation() {
+        boolean isDarkTheme = getSharedPreferences("AppSettings", MODE_PRIVATE)
+                .getBoolean("isDarkTheme", false);
+        setTheme(isDarkTheme ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Проверка изменения темы при возврате из настроек
+        if (needRecreate()) {
+            applyThemeBeforeCreation();
+            getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            invalidateOptionsMenu();
+        }
+    }
+
+    private boolean needRecreate() {
+        boolean currentTheme = getSharedPreferences("AppSettings", MODE_PRIVATE)
+                .getBoolean("isDarkTheme", false);
+        return currentTheme != (getResources().getConfiguration().uiMode
+                == Configuration.UI_MODE_NIGHT_YES);
+    }
     private void loadRecords() {
         repository.getAllRecords().observe(this, records -> {
             RecordAdapter adapter = new RecordAdapter(records);

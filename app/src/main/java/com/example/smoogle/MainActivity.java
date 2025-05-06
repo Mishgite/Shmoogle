@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SETTINGS = 1001;
     private boolean isReturningFromSettings = false;
     private static final int REQUEST_EDIT_TEXT = 1002;
+    private static final int REQUEST_RECORDS = 1003; // Добавьте эту константу
 
 
     private TextRecognitionViewModel viewModel;
@@ -79,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
         }
         textRepository.saveRecord(currentRecord);
     }
+    private void openRecordsActivity() {
+        Intent intent = new Intent(this, RecordsActivity.class);
+        intent.putExtra("current_text", resultText.getText().toString());
+        startActivityForResult(intent, REQUEST_RECORDS);
+    }
     private void initializeViews() {
         try {
             imagePreview = findViewById(R.id.image_view);
@@ -90,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
             Button cameraButton = findViewById(R.id.camera_button);
             Button settingsButton = findViewById(R.id.settings_button);
             Button historyButton = findViewById(R.id.history_button);
-            historyButton.setOnClickListener(v ->
-                    startActivity(new Intent(this, RecordsActivity.class)));
+            historyButton.setOnClickListener(v -> openRecordsActivity()); // Используем метод
+
             editButton.setOnClickListener(v -> {
                 if (resultText.getText() != null) {
                     openEditActivity();
@@ -353,6 +359,29 @@ public class MainActivity extends AppCompatActivity {
                     String editedText = data.getStringExtra("editedText");
                     resultText.setText(editedText);
                     viewModel.updateRecognizedText(editedText);
+                }
+            }
+        }
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_RECORDS && data != null) {
+                String action = data.getStringExtra("action");
+                String selectedText = data.getStringExtra("selected_text");
+
+                if (action != null && selectedText != null) {
+                    String currentText = resultText.getText().toString();
+
+                    if ("append".equals(action)) {
+                        resultText.setText(currentText.isEmpty()
+                                ? selectedText
+                                : currentText + "\n" + selectedText);
+                    } else if ("replace".equals(action)) {
+                        resultText.setText(selectedText);
+                    }
+
+                    // Обновляем ViewModel и сохраняем в БД
+                    viewModel.updateRecognizedText(resultText.getText().toString());
+                    autoSaveToDatabase(resultText.getText().toString());
                 }
             }
         }

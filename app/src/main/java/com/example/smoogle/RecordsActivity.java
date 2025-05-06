@@ -1,5 +1,6 @@
 package com.example.smoogle;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
 
 public class RecordsActivity extends AppCompatActivity {
@@ -21,8 +24,7 @@ public class RecordsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        applyThemeBeforeCreation(); // Применить тему до setContentView()
-
+        applyCurrentTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records);
 
@@ -32,29 +34,13 @@ public class RecordsActivity extends AppCompatActivity {
 
         loadRecords();
     }
-    private void applyThemeBeforeCreation() {
+
+    private void applyCurrentTheme() {
         boolean isDarkTheme = getSharedPreferences("AppSettings", MODE_PRIVATE)
                 .getBoolean("isDarkTheme", false);
         setTheme(isDarkTheme ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Проверка изменения темы при возврате из настроек
-        if (needRecreate()) {
-            applyThemeBeforeCreation();
-            getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            invalidateOptionsMenu();
-        }
-    }
-
-    private boolean needRecreate() {
-        boolean currentTheme = getSharedPreferences("AppSettings", MODE_PRIVATE)
-                .getBoolean("isDarkTheme", false);
-        return currentTheme != (getResources().getConfiguration().uiMode
-                == Configuration.UI_MODE_NIGHT_YES);
-    }
     private void loadRecords() {
         repository.getAllRecords().observe(this, records -> {
             RecordAdapter adapter = new RecordAdapter(records);
@@ -98,26 +84,42 @@ public class RecordsActivity extends AppCompatActivity {
             textView = itemView.findViewById(R.id.record_text);
             btnAppend = itemView.findViewById(R.id.btn_append);
             btnReplace = itemView.findViewById(R.id.btn_replace);
-            btnDelete = itemView.findViewById(R.id.btn_delete);
+            btnDelete = itemView.findViewById(R.id.btn_delete); // Добавлена кнопка удаления
         }
 
         void bind(TextRecord record) {
             textView.setText(record.content);
 
             btnAppend.setOnClickListener(v -> {
-                String newText = textView.getText().toString();
-                record.content += "\n" + newText;
-                repository.updateRecord(record);
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("action", "append");
+                resultIntent.putExtra("selected_text", record.content);
+                setResult(RESULT_OK, resultIntent);
+                finish();
             });
 
             btnReplace.setOnClickListener(v -> {
-                String newText = textView.getText().toString();
-                record.content = newText;
-                repository.updateRecord(record);
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("action", "replace");
+                resultIntent.putExtra("selected_text", record.content);
+                setResult(RESULT_OK, resultIntent);
+                finish();
             });
+            // Обработка кнопки "Удалить"
+            btnDelete.setOnClickListener(v -> {
+                repository.deleteRecord(record);
+                Snackbar.make(itemView, "Запись удалена", Snackbar.LENGTH_LONG)
+                        .setAction("Отмена", v1 -> repository.saveRecord(record))
+                        .show();
+            });
+        }
 
-            btnDelete.setOnClickListener(v ->
-                    repository.deleteRecord(record));
+        private void returnResult(String text, boolean isAppend) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("text", text);
+            resultIntent.putExtra("mode", isAppend ? "append" : "replace");
+            setResult(RESULT_OK, resultIntent);
+            finish();
         }
     }
 }
